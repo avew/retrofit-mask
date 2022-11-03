@@ -11,7 +11,7 @@
     <description>Custom retrofit with masking log</description>
 
     <name>retrofit-mask</name>
-    <url>https://avew.github.io</url>
+    <url>https://github.com/avew/retrofit-mask</url>
     <licenses>
         <license>
             <name>MIT License</name>
