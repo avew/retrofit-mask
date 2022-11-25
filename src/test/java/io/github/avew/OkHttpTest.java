@@ -38,6 +38,7 @@ public class OkHttpTest {
                 .url("https://reqres.in")
                 .agent("OkHttp/4.1.0")
                 .build();
+        log.debug("CONFIG {}", customHttpConfig.getCustomTimeout());
         retrofit = new OkHttpCustomConfiguration(customHttpConfig, maskingLog, true)
                 .builder()
                 .addConverterFactory(GsonConverterFactory.create())

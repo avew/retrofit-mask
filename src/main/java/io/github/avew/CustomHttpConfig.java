@@ -23,4 +23,22 @@ public class CustomHttpConfig {
     private String proxyHost;
     private int proxyPort;
     private String agent;
+    @Builder.Default
+    private CustomTimeout customTimeout = new CustomTimeout();
+
+    @Override
+    public String toString() {
+        return "CustomHttpConfig{" +
+                "url='" + url + '\'' +
+                ", proxy=" + proxy +
+                ", proxyAuth=" + proxyAuth +
+                ", proxyUsername='" + proxyUsername + '\'' +
+                ", proxyPassword='" + proxyPassword + '\'' +
+                ", urlSkipProxy=" + urlSkipProxy +
+                ", proxyHost='" + proxyHost + '\'' +
+                ", proxyPort=" + proxyPort +
+                ", agent='" + agent + '\'' +
+                ", customTimeout=" + customTimeout +
+                '}';
+    }
 }

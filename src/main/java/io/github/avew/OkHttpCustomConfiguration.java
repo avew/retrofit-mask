@@ -19,7 +19,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,9 +45,9 @@ public class OkHttpCustomConfiguration {
 
             OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder();
 
-            httpClient.connectTimeout(5L, TimeUnit.MINUTES);
-            httpClient.readTimeout(10L, TimeUnit.MINUTES);
-            httpClient.writeTimeout(5L, TimeUnit.MINUTES);
+            httpClient.connectTimeout(config.getCustomTimeout().getConnectTimeout(), config.getCustomTimeout().getConnectTimeoutUnit());
+            httpClient.readTimeout(config.getCustomTimeout().getReadTimeout(), config.getCustomTimeout().getReadTimeoutUnit());
+            httpClient.writeTimeout(config.getCustomTimeout().getWriteTimeout(), config.getCustomTimeout().getWriteTimeoutUnit());
 
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
