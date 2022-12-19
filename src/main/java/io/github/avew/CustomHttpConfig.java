@@ -26,6 +26,9 @@ public class CustomHttpConfig {
     @Builder.Default
     private CustomTimeout customTimeout = new CustomTimeout();
 
+    @Builder.Default
+    private boolean masking = true;
+
     @Override
     public String toString() {
         return "CustomHttpConfig{" +

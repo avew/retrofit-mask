@@ -37,6 +37,7 @@ public class OkHttpTest {
         CustomHttpConfig customHttpConfig = CustomHttpConfig.builder()
                 .url("https://reqres.in")
                 .agent("OkHttp/4.1.0")
+                .masking(false)
                 .build();
         log.debug("CONFIG {}", customHttpConfig.getCustomTimeout());
         retrofit = new OkHttpCustomConfiguration(customHttpConfig, maskingLog, true)

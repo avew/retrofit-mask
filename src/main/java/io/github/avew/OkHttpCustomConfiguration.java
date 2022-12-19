@@ -8,6 +8,7 @@ import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang.StringUtils;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -40,6 +41,7 @@ public class OkHttpCustomConfiguration {
         this.debug = debug;
     }
 
+
     public Retrofit.Builder builder() throws RuntimeException {
         try {
 
@@ -56,13 +58,19 @@ public class OkHttpCustomConfiguration {
                         .build();
                 return chain.proceed(request);
             });
-            httpClient.addNetworkInterceptor(customNetworkInterceptors());
+            if (config.isMasking()) {
+                httpClient.addNetworkInterceptor(customNetworkInterceptors());
+            } else {
+                httpClient.addInterceptor(httpLoggingInterceptor());
+            }
+
             this.setTrustManager(httpClient);
 
             if (config.isProxy()) {
-                log.info("CONNECTION USE PROXY");
+                log.info("CONNECTION TO {} USE PROXY", config.getUrl());
 
                 if (config.isProxyAuth()) {
+                    log.info("CONNECTION TO {} USE PROXY WITH AUTH", config.getUrl());
                     Authenticator proxyAuthenticator = (route, response) -> {
                         String credential = Credentials.basic(config.getProxyUsername(), config.getProxyPassword());
                         return response.request().newBuilder()
@@ -153,6 +161,12 @@ public class OkHttpCustomConfiguration {
         return sb.toString();
     }
 
+    private HttpLoggingInterceptor httpLoggingInterceptor() {
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        return httpLoggingInterceptor;
+    }
+
     private CustomizableHttpLoggingInterceptor customNetworkInterceptors() {
         CustomizableHttpLoggingInterceptor logging = new CustomizableHttpLoggingInterceptor(
                 (String msg) -> {
@@ -164,7 +178,6 @@ public class OkHttpCustomConfiguration {
                 },
                 debug,
                 debug);
-
         logging.redactHeader("Authorization");
         logging.redactHeader("Cookie");
         return logging;
