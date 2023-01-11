@@ -6,7 +6,7 @@
 
     <groupId>avew.github.io</groupId>
     <artifactId>retrofit-mask</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
     <description>Custom retrofit with masking log</description>
 
@@ -31,6 +31,15 @@
         <maven.compiler.target>11</maven.compiler.target>
         <okhttp3.version>4.9.3</okhttp3.version>
         <retrofit.version>2.6.4</retrofit.version>
+        <lombok.version>1.18.24</lombok.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <gson.version>2.10</gson.version>
+        <jackson-databind.version>2.13.4.2</jackson-databind.version>
+        <logback.version>1.2.9</logback.version>
+        <junit.version>4.13.1</junit.version>
+        <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
     </properties>
 
     <dependencies>
@@ -50,7 +59,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.10</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
@@ -66,7 +75,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.2</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
@@ -95,34 +104,33 @@
             <version>1.0.2</version>
         </dependency>
         <!--retrofit-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${commons-lang.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.9</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.9</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -133,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration> <!-- Compile java 7 compatible bytecode -->
                     <source>11</source>
                     <target>11</target>
@@ -143,7 +151,7 @@
             <plugin>  <!-- Create sources.jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -157,7 +165,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -177,12 +185,5 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/avew</url>
-        </repository>
-    </distributionManagement>
 
 </project>
