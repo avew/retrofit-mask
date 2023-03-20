@@ -20,6 +20,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,6 +44,11 @@ public class OkHttpCustomConfiguration {
 
 
     public Retrofit.Builder builder() throws RuntimeException {
+        return builder(e -> {});
+    }
+
+
+    public Retrofit.Builder builder(Consumer<OkHttpClient.Builder> configureClient) throws RuntimeException {
         try {
 
             OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder();
@@ -60,7 +66,8 @@ public class OkHttpCustomConfiguration {
             });
             if (config.isMasking()) {
                 httpClient.addNetworkInterceptor(customNetworkInterceptors());
-            } else {
+            }
+            else {
                 httpClient.addInterceptor(httpLoggingInterceptor());
             }
 
@@ -90,7 +97,8 @@ public class OkHttpCustomConfiguration {
                         String noProxyHost = config.getUrlSkipProxy().stream().collect(Collectors.joining(","));
                         if (StringUtils.contains(noProxyHost, host)) {
                             return List.of(Proxy.NO_PROXY);
-                        } else {
+                        }
+                        else {
                             // Add Proxy
                             return List.of(new Proxy(Proxy.Type.HTTP,
                                     new InetSocketAddress(config.getProxyHost(), config.getProxyPort())));
@@ -105,6 +113,7 @@ public class OkHttpCustomConfiguration {
                 });
             }
 
+            if (configureClient != null) configureClient.accept(httpClient);
             OkHttpClient client = httpClient.build();
 
             return new Retrofit.Builder()
@@ -112,7 +121,8 @@ public class OkHttpCustomConfiguration {
                     .client(client)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
 
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
