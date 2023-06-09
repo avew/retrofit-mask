@@ -3,6 +3,8 @@
 
 [![](https://jitpack.io/v/avew/retrofit-mask.svg)](https://jitpack.io/#avew/retrofit-mask)
 
+[![CircleCI](https://circleci.com/gh/avew/retrofit-mask.svg?style=shield)](https://circleci.com/gh/avew/retrofit-mask)
+
 # How To Use
 
 ```
@@ -10,7 +12,7 @@
                 .url("https://reqres.in")
                 .agent("OkHttp/4.1.0")
                 .build();
- Retrofit retrofit = new OkHttpCustomConfiguration(customHttpConfig, Arrays.asList("https","password"), true).builder()
+ Retrofit retrofit = new VewHttp(customHttpConfig, Arrays.asList("https","password"), true).builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
  Response<MultipleResource> single = retrofit.create(API.class)
