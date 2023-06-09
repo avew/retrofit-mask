@@ -1,12 +1,17 @@
 package io.github.avew;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +45,15 @@ public class OkHttpTest {
                 .masking(false)
                 .build();
         log.debug("CONFIG {}", customHttpConfig.getCustomTimeout());
-        retrofit = new OkHttpCustomConfiguration(customHttpConfig, maskingLog, true)
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter();
+        mapper.coercionConfigFor(LogicalType.POJO)
+                .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsEmpty);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        retrofit = new VewHttp(customHttpConfig, maskingLog, true)
                 .builder()
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build();
     }
 
@@ -55,4 +66,6 @@ public class OkHttpTest {
         Assert.assertEquals(200, single.code());
 
     }
+
+
 }

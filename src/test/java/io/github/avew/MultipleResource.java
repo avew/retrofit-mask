@@ -1,32 +1,31 @@
 package io.github.avew;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MultipleResource {
 
-    @SerializedName("page")
+    @JsonProperty("page")
     public Integer page;
-    @SerializedName("per_page")
+    @JsonProperty("per_page")
     public Integer perPage;
-    @SerializedName("total")
+    @JsonProperty("total")
     public Integer total;
-    @SerializedName("total_pages")
+    @JsonProperty("total_pages")
     public Integer totalPages;
-    @SerializedName("data")
-    public List<Datum> data = null;
+    @JsonProperty("data")
+    @Builder.Default
+    public List<Datum> data = new ArrayList<>();
 
-    public class Datum {
 
-        @SerializedName("id")
-        public Integer id;
-        @SerializedName("name")
-        public String name;
-        @SerializedName("year")
-        public Integer year;
-        @SerializedName("pantone_value")
-        public String pantoneValue;
-
-    }
 }

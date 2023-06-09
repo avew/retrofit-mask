@@ -26,17 +26,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@SuppressWarnings("SpellCheckingInspection")
-
 @RequiredArgsConstructor
 @Slf4j
-public class OkHttpCustomConfiguration {
+public class VewHttp {
 
     private CustomHttpConfig config;
     private List<String> masking = new ArrayList<>();
     private boolean debug;
 
-    public OkHttpCustomConfiguration(CustomHttpConfig config, List<String> masking, boolean debug) {
+    public VewHttp(CustomHttpConfig config, List<String> masking, boolean debug) {
         this.config = config;
         this.masking = masking;
         this.debug = debug;
