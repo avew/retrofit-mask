@@ -3,6 +3,8 @@
 
 [![](https://jitpack.io/v/avew/retrofit-mask.svg)](https://jitpack.io/#avew/retrofit-mask)
 
+[![CircleCI](https://circleci.com/gh/avew/retrofit-mask.svg?style=svg)](https://circleci.com/gh/avew/retrofit-mask)
+
 # How To Use
 
 ```
