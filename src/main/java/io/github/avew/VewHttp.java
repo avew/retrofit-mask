@@ -42,7 +42,8 @@ public class VewHttp {
 
 
     public Retrofit.Builder builder() throws RuntimeException {
-        return builder(e -> {});
+        return builder(e -> {
+        });
     }
 
 
@@ -54,7 +55,7 @@ public class VewHttp {
             httpClient.connectTimeout(config.getCustomTimeout().getConnectTimeout(), config.getCustomTimeout().getConnectTimeoutUnit());
             httpClient.readTimeout(config.getCustomTimeout().getReadTimeout(), config.getCustomTimeout().getReadTimeoutUnit());
             httpClient.writeTimeout(config.getCustomTimeout().getWriteTimeout(), config.getCustomTimeout().getWriteTimeoutUnit());
-
+            httpClient.retryOnConnectionFailure(config.isRetryConnectionFailure());
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
                 Request request = original.newBuilder()
@@ -64,8 +65,7 @@ public class VewHttp {
             });
             if (config.isMasking()) {
                 httpClient.addNetworkInterceptor(customNetworkInterceptors());
-            }
-            else {
+            } else {
                 httpClient.addInterceptor(httpLoggingInterceptor());
             }
 
@@ -95,8 +95,7 @@ public class VewHttp {
                         String noProxyHost = config.getUrlSkipProxy().stream().collect(Collectors.joining(","));
                         if (StringUtils.contains(noProxyHost, host)) {
                             return List.of(Proxy.NO_PROXY);
-                        }
-                        else {
+                        } else {
                             // Add Proxy
                             return List.of(new Proxy(Proxy.Type.HTTP,
                                     new InetSocketAddress(config.getProxyHost(), config.getProxyPort())));
@@ -119,8 +118,7 @@ public class VewHttp {
                     .client(client)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }

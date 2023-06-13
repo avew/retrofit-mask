@@ -26,8 +26,11 @@ public class CustomHttpConfig {
     @Builder.Default
     private CustomTimeout customTimeout = new CustomTimeout();
 
+
     @Builder.Default
     private boolean masking = true;
+    @Builder.Default
+    private boolean retryConnectionFailure = false;
 
     @Override
     public String toString() {
