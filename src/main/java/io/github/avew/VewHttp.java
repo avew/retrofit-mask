@@ -58,10 +58,10 @@ public class VewHttp {
             httpClient.retryOnConnectionFailure(config.isRetryConnectionFailure());
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
-                Request request = original.newBuilder()
-                        .header("User-Agent", config.getAgent())
-                        .build();
-                return chain.proceed(request);
+                Request.Builder request = original.newBuilder();
+                request.header("User-Agent", config.getAgent());
+                if (config.isRetryConnectionFailure()) request.header("Connection", "close");
+                return chain.proceed(request.build());
             });
             if (config.isMasking()) {
                 httpClient.addNetworkInterceptor(customNetworkInterceptors());
@@ -184,8 +184,11 @@ public class VewHttp {
                 },
                 debug,
                 debug);
-        logging.redactHeader("Authorization");
-        logging.redactHeader("Cookie");
+        if (config.getExcludeHeaders().isEmpty()) {
+            logging.redactHeader("Authorization");
+            logging.redactHeader("Cookie");
+        } else config.getExcludeHeaders().forEach(logging::redactHeader);
+
         return logging;
     }
 

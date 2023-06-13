@@ -42,9 +42,11 @@ public class OkHttpTest {
         CustomHttpConfig customHttpConfig = CustomHttpConfig.builder()
                 .url("https://reqres.in")
                 .agent("OkHttp/4.1.0")
-                .masking(false)
+                .masking(true)
+                .excludeHeaders(Arrays.asList("X-Api-Key","User-Agent","Host"))
                 .build();
         log.debug("CONFIG {}", customHttpConfig.getCustomTimeout());
+        log.debug("CONFIG {}", customHttpConfig.getExcludeHeaders());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithDefaultPrettyPrinter();

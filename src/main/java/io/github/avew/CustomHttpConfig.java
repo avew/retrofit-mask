@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -31,6 +32,9 @@ public class CustomHttpConfig {
     private boolean masking = true;
     @Builder.Default
     private boolean retryConnectionFailure = false;
+    @Builder.Default
+    private List<String> excludeHeaders = new ArrayList<>();
+
 
     @Override
     public String toString() {
