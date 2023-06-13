@@ -1,8 +1,5 @@
 # Custom Retrofit With Masking Log
-[https://jitpack.io/#avew/retrofit-mask](https://jitpack.io/#avew/retrofit-mask)
-
 [![](https://jitpack.io/v/avew/retrofit-mask.svg)](https://jitpack.io/#avew/retrofit-mask)
-
 [![CircleCI](https://circleci.com/gh/avew/retrofit-mask.svg?style=shield)](https://circleci.com/gh/avew/retrofit-mask)
 
 # How To Use
