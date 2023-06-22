@@ -13,20 +13,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomHttpConfig {
+
     private String url;
+
     @Builder.Default
-    private boolean proxy = false;
+    private CustomProxy proxy = new CustomProxy();
+
     @Builder.Default
-    private boolean proxyAuth = false;
-    private String proxyUsername;
-    private String proxyPassword;
-    private List<String> urlSkipProxy;
-    private String proxyHost;
-    private int proxyPort;
-    private String agent;
+    private String agent = null;
+
     @Builder.Default
     private CustomTimeout customTimeout = new CustomTimeout();
-
 
     @Builder.Default
     private boolean masking = true;
@@ -35,20 +32,22 @@ public class CustomHttpConfig {
     @Builder.Default
     private List<String> excludeHeaders = new ArrayList<>();
 
+    @Builder.Default
+    private HttpTls TLS = HttpTls.TLS1_2;
 
-    @Override
-    public String toString() {
-        return "CustomHttpConfig{" +
-                "url='" + url + '\'' +
-                ", proxy=" + proxy +
-                ", proxyAuth=" + proxyAuth +
-                ", proxyUsername='" + proxyUsername + '\'' +
-                ", proxyPassword='" + proxyPassword + '\'' +
-                ", urlSkipProxy=" + urlSkipProxy +
-                ", proxyHost='" + proxyHost + '\'' +
-                ", proxyPort=" + proxyPort +
-                ", agent='" + agent + '\'' +
-                ", customTimeout=" + customTimeout +
-                '}';
+    public static String mask(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        char[] chs = new char[value.length()];
+        for (int i = 1; i < chs.length; i++) {
+            chs[i] = '*';
+        }
+        chs[0] = value.charAt(0);
+        chs[chs.length - 1] = value.charAt(value.length() - 1);
+        return new String(chs);
     }
+
+
 }

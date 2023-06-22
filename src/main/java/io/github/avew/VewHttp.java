@@ -4,10 +4,8 @@ package io.github.avew;
 import com.bartoszwesolowski.okhttp3.logging.CustomizableHttpLoggingInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import okhttp3.Authenticator;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang.StringUtils;
 import retrofit2.Retrofit;
@@ -19,6 +17,7 @@ import java.net.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -59,55 +58,75 @@ public class VewHttp {
             httpClient.addInterceptor(chain -> {
                 Request original = chain.request();
                 Request.Builder request = original.newBuilder();
-                request.header("User-Agent", config.getAgent());
+                if (config.getAgent() != null)
+                    request.header("User-Agent", config.getAgent());
                 if (config.isRetryConnectionFailure()) request.header("Connection", "close");
                 return chain.proceed(request.build());
             });
-            if (config.isMasking()) {
-                httpClient.addNetworkInterceptor(customNetworkInterceptors());
-            } else {
-                httpClient.addInterceptor(httpLoggingInterceptor());
+            httpClient.addNetworkInterceptor(customNetworkInterceptors());
+
+            switch (config.getTLS()) {
+                case TLS1_1:
+                    ConnectionSpec tls11 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1)
+                            .build();
+                    httpClient.connectionSpecs(List.of(tls11));
+                    break;
+                case TLS1_2:
+                    ConnectionSpec tls12 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_2)
+                            .build();
+                    httpClient.connectionSpecs(List.of(tls12));
+                    break;
+                case TLS1_3:
+                    ConnectionSpec tls13 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_3)
+                            .build();
+                    httpClient.connectionSpecs(List.of(tls13));
+                    break;
             }
 
             this.setTrustManager(httpClient);
 
-            if (config.isProxy()) {
-                log.info("CONNECTION TO {} USE PROXY", config.getUrl());
+            if (config.getProxy() != null) {
+                CustomProxy proxy = config.getProxy();
+                if (proxy.isProxy()) {
+                    log.info("CONNECTION TO {} USE PROXY", config.getUrl());
 
-                if (config.isProxyAuth()) {
-                    log.info("CONNECTION TO {} USE PROXY WITH AUTH", config.getUrl());
-                    Authenticator proxyAuthenticator = (route, response) -> {
-                        String credential = Credentials.basic(config.getProxyUsername(), config.getProxyPassword());
-                        return response.request().newBuilder()
-                                .header("Proxy-Authorization", credential)
-                                .build();
-                    };
-                    httpClient.proxyAuthenticator(proxyAuthenticator);
-                }
+                    if (proxy.isAuth()) {
+                        log.info("CONNECTION TO {} USE PROXY WITH AUTH", config.getUrl());
+                        Authenticator proxyAuthenticator = (route, response) -> {
+                            String credential = Credentials.basic(proxy.getUsername(), proxy.getPassword());
+                            return response.request().newBuilder()
+                                    .header("Proxy-Authorization", credential)
+                                    .build();
+                        };
+                        httpClient.proxyAuthenticator(proxyAuthenticator);
+                    }
 
-                httpClient.proxySelector(new ProxySelector() {
-                    @Override
-                    public List<Proxy> select(URI uri) {
+                    httpClient.proxySelector(new ProxySelector() {
+                        @Override
+                        public List<Proxy> select(URI uri) {
 
-                        // Host
-                        final String host = uri.getHost();
+                            // Host
+                            final String host = uri.getHost();
 
-                        String noProxyHost = config.getUrlSkipProxy().stream().collect(Collectors.joining(","));
-                        if (StringUtils.contains(noProxyHost, host)) {
-                            return List.of(Proxy.NO_PROXY);
-                        } else {
-                            // Add Proxy
-                            return List.of(new Proxy(Proxy.Type.HTTP,
-                                    new InetSocketAddress(config.getProxyHost(), config.getProxyPort())));
+                            String noProxyHost = proxy.getUrlSkip().stream().collect(Collectors.joining(","));
+                            if (StringUtils.contains(noProxyHost, host)) {
+                                return List.of(Proxy.NO_PROXY);
+                            } else {
+                                // Add Proxy
+                                return List.of(new Proxy(Proxy.Type.HTTP,
+                                        new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                            }
                         }
 
-                    }
-
-                    @Override
-                    public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-                        throw new UnsupportedOperationException("Proxy Not supported yet.");
-                    }
-                });
+                        @Override
+                        public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                            throw new UnsupportedOperationException("Proxy Not supported yet.");
+                        }
+                    });
+                }
             }
 
             if (configureClient != null) configureClient.accept(httpClient);
@@ -150,10 +169,18 @@ public class VewHttp {
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
         httpClient.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
         httpClient.hostnameVerifier((String s, SSLSession sslSession) -> true);
+
+
     }
 
     private String maskingLog(List<String> words, String msg) {
-        List<String> maskPatterns = words.stream().map(s -> "\"([" + s + "\"]+)\"\\s*:\\s*\"([^\"]+)\",?").collect(Collectors.toList());
+        List<String> maskPatterns;
+        if (config.isMasking()) {
+            maskPatterns = words.stream().map(s -> "\"([" + s + "\"]+)\"\\s*:\\s*\"([^\"]+)\",?").collect(Collectors.toList());
+        } else {
+            maskPatterns = new ArrayList<>();
+        }
+
         Pattern multilinePattern = Pattern.compile(String.join("|", maskPatterns), Pattern.MULTILINE);
         StringBuilder sb = new StringBuilder(msg);
         Matcher matcher = multilinePattern.matcher(sb);
@@ -164,13 +191,8 @@ public class VewHttp {
                 }
             });
         }
-        return sb.toString();
-    }
 
-    private HttpLoggingInterceptor httpLoggingInterceptor() {
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return httpLoggingInterceptor;
+        return sb.toString();
     }
 
     private CustomizableHttpLoggingInterceptor customNetworkInterceptors() {

@@ -20,42 +20,28 @@ import java.util.List;
 public class OkHttpTest {
 
     private Retrofit retrofit;
-    private final List<String> maskingLog = Arrays.asList("https",
-            "password",
-            "docpass",
-            "docpas",
-            "pass",
-            "data",
-            "content",
-            "client_secret",
-            "user",
-            "token",
-            "sn",
-            "image",
-            "noidentitas",
-            "namedipungut",
-            "jwToken",
-            "refToken");
+    private final List<String> maskingLog = Arrays.asList("user", "password", "name");
 
-    @Before
-    public void init() {
-        CustomHttpConfig customHttpConfig = CustomHttpConfig.builder()
-                .url("https://reqres.in")
-                .agent("OkHttp/4.1.0")
-                .masking(true)
-                .excludeHeaders(Arrays.asList("X-Api-Key","User-Agent","Host"))
-                .build();
-        log.debug("CONFIG {}", customHttpConfig.getCustomTimeout());
-        log.debug("CONFIG {}", customHttpConfig.getExcludeHeaders());
-
+    private ObjectMapper mapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithDefaultPrettyPrinter();
         mapper.coercionConfigFor(LogicalType.POJO)
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsEmpty);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
+    }
+
+    @Before
+    public void init() {
+        CustomHttpConfig customHttpConfig = CustomHttpConfig.builder()
+                .url("https://reqres.in")
+                .masking(true)
+                .excludeHeaders(List.of("X-Api-Key"))
+                .build();
+
         retrofit = new VewHttp(customHttpConfig, maskingLog, true)
                 .builder()
-                .addConverterFactory(JacksonConverterFactory.create(mapper))
+                .addConverterFactory(JacksonConverterFactory.create(mapper()))
                 .build();
     }
 
