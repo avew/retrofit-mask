@@ -65,24 +65,27 @@ public class VewHttp {
             });
             httpClient.addNetworkInterceptor(customNetworkInterceptors());
 
+            ConnectionSpec connectionSpecClearText = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT)
+                    .build();
             switch (config.getTLS()) {
                 case TLS1_1:
                     ConnectionSpec tls11 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                             .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1)
                             .build();
-                    httpClient.connectionSpecs(List.of(tls11));
+
+                    httpClient.connectionSpecs(List.of(tls11, connectionSpecClearText));
                     break;
                 case TLS1_2:
                     ConnectionSpec tls12 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                             .tlsVersions(TlsVersion.TLS_1_2)
                             .build();
-                    httpClient.connectionSpecs(List.of(tls12));
+                    httpClient.connectionSpecs(List.of(tls12, connectionSpecClearText));
                     break;
                 case TLS1_3:
                     ConnectionSpec tls13 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                             .tlsVersions(TlsVersion.TLS_1_3)
                             .build();
-                    httpClient.connectionSpecs(List.of(tls13));
+                    httpClient.connectionSpecs(List.of(tls13, connectionSpecClearText));
                     break;
             }
 
