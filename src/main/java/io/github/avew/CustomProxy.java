@@ -20,6 +20,8 @@ public class CustomProxy {
     @Builder.Default
     private boolean proxy = false;
     @Builder.Default
+    private ProxyType type = ProxyType.HTTP;
+    @Builder.Default
     private boolean auth = false;
     private String username;
     private String password;

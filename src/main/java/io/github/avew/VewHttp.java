@@ -109,14 +109,32 @@ public class VewHttp {
                 log.info("CONNECTION TO {} USE PROXY", config.getUrl());
 
                 if (proxy.isAuth()) {
-                    log.info("CONNECTION TO {} USE PROXY WITH AUTH", config.getUrl());
-                    Authenticator proxyAuthenticator = (route, response) -> {
-                        String credential = Credentials.basic(proxy.getUsername(), proxy.getPassword());
-                        return response.request().newBuilder()
-                                .header("Proxy-Authorization", credential)
-                                .build();
-                    };
-                    httpClient.proxyAuthenticator(proxyAuthenticator);
+                    log.info("CONNECTION TO {} USE PROXY WITH AUTH AND PROXY TYPE {}", config.getUrl(), proxy.getType());
+                    switch (proxy.getType()) {
+                        case SOCKS:
+                            java.net.Authenticator.setDefault(new java.net.Authenticator() {
+                                private final PasswordAuthentication authentication = new PasswordAuthentication(proxy.getUsername(), proxy.getPassword().toCharArray());
+
+                                @Override
+                                protected PasswordAuthentication getPasswordAuthentication() {
+                                    return authentication;
+                                }
+                            });
+                            httpClient.proxy(new Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(proxy.getHost(), proxy.getPort())));
+                            break;
+                        case HTTP:
+                            Authenticator proxyAuthenticator = (route, response) -> {
+                                String credential = Credentials.basic(proxy.getUsername(), proxy.getPassword());
+                                return response.request().newBuilder()
+                                        .header("Proxy-Authorization", credential)
+                                        .build();
+                            };
+                            httpClient.authenticator(proxyAuthenticator);
+                            httpClient.proxyAuthenticator(proxyAuthenticator);
+                            httpClient.proxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(proxy.getHost(), proxy.getPort())));
+                            break;
+
+                    }
                 }
 
                 httpClient.proxySelector(new ProxySelector() {
@@ -131,8 +149,14 @@ public class VewHttp {
                             return List.of(Proxy.NO_PROXY);
                         } else {
                             // Add Proxy
-                            return List.of(new Proxy(Proxy.Type.HTTP,
-                                    new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                            if (proxy.getType().equals(ProxyType.HTTP)) {
+                                return List.of(new Proxy(Proxy.Type.HTTP,
+                                        new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                            } else {
+                                return List.of(new Proxy(Proxy.Type.SOCKS,
+                                        new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                            }
+
                         }
                     }
 
