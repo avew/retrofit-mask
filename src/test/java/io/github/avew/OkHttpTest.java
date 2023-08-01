@@ -36,7 +36,7 @@ public class OkHttpTest {
         CustomHttpConfig customHttpConfig = CustomHttpConfig.builder()
                 .url("https://reqres.in")
                 .masking(true)
-                .excludeHeaders(List.of("X-Api-Key"))
+                .excludeHeaders(Arrays.asList("X-Api-Key"))
                 .build();
 
         retrofit = new VewHttp(customHttpConfig, maskingLog, true)

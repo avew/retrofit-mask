@@ -35,6 +35,12 @@ public class CustomHttpConfig {
     @Builder.Default
     private HttpTls TLS = HttpTls.TLS1_2;
 
+    @Builder.Default
+    private String accessToken = null;
+
+    @Builder.Default
+    private String clientId = null;
+
     public static String mask(String value) {
         if (value == null) {
             return null;

@@ -17,6 +17,7 @@ import java.net.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -73,6 +74,13 @@ public class VewHttp {
             if (config.getAgent() != null)
                 request.header("User-Agent", config.getAgent());
             if (config.isRetryConnectionFailure()) request.header("Connection", "close");
+
+            if (config.getAccessToken() != null)
+                request.header("Authorization", "Bearer " + config.getAccessToken());
+
+            if (config.getClientId() != null)
+                request.header("X-Client", config.getClientId());
+
             return chain.proceed(request.build());
         });
         httpClient.addNetworkInterceptor(customNetworkInterceptors());
@@ -85,19 +93,19 @@ public class VewHttp {
                         .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1)
                         .build();
 
-                httpClient.connectionSpecs(List.of(tls11, connectionSpecClearText));
+                httpClient.connectionSpecs(Arrays.asList(tls11, connectionSpecClearText));
                 break;
             case TLS1_2:
                 ConnectionSpec tls12 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                         .tlsVersions(TlsVersion.TLS_1_2)
                         .build();
-                httpClient.connectionSpecs(List.of(tls12, connectionSpecClearText));
+                httpClient.connectionSpecs(Arrays.asList(tls12, connectionSpecClearText));
                 break;
             case TLS1_3:
                 ConnectionSpec tls13 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                         .tlsVersions(TlsVersion.TLS_1_3)
                         .build();
-                httpClient.connectionSpecs(List.of(tls13, connectionSpecClearText));
+                httpClient.connectionSpecs(Arrays.asList(tls13, connectionSpecClearText));
                 break;
         }
 
@@ -146,15 +154,15 @@ public class VewHttp {
 
                         String noProxyHost = proxy.getUrlSkip().stream().collect(Collectors.joining(","));
                         if (StringUtils.contains(noProxyHost, host)) {
-                            return List.of(Proxy.NO_PROXY);
+                            return Arrays.asList(Proxy.NO_PROXY);
                         } else {
                             // Add Proxy
                             if (proxy.getType().equals(ProxyType.HTTP)) {
-                                return List.of(new Proxy(Proxy.Type.HTTP,
-                                        new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                                return Arrays.asList(new Proxy(Proxy.Type.HTTP,
+                                    new InetSocketAddress(proxy.getHost(), proxy.getPort())));
                             } else {
-                                return List.of(new Proxy(Proxy.Type.SOCKS,
-                                        new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                                return Arrays.asList(new Proxy(Proxy.Type.SOCKS,
+                                    new InetSocketAddress(proxy.getHost(), proxy.getPort())));
                             }
 
                         }
