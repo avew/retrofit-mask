@@ -6,7 +6,7 @@
 
     <groupId>avew.github.io</groupId>
     <artifactId>retrofit-mask</artifactId>
-    <version>0.0.10</version>
+    <version>1.8-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>Custom retrofit with masking log</description>
 
