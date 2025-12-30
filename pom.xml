@@ -30,24 +30,36 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <okhttp3.version>4.9.3</okhttp3.version>
+        <!-- Retrofit and OkHttp -->
         <retrofit.version>2.6.4</retrofit.version>
+        <okhttp3.version>4.9.3</okhttp3.version>
+        <customizable-okhttp-logging-interceptor.version>1.0.2</customizable-okhttp-logging-interceptor.version>
 
-        <lombok.version>1.18.28</lombok.version>
-        <commons-lang.version>2.6</commons-lang.version>
+        <!-- JSON Processing -->
         <gson.version>2.10.1</gson.version>
         <jackson-databind.version>2.15.2</jackson-databind.version>
+
+        <!-- Logging -->
         <logback.version>1.4.7</logback.version>
+
+        <!-- Utilities -->
+        <lombok.version>1.18.28</lombok.version>
+        <commons-lang.version>2.6</commons-lang.version>
+
+        <!-- Testing -->
         <junit.version>4.13.2</junit.version>
 
+        <!-- Maven Plugins -->
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
         <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
+        <versions-maven-plugin.version>2.16.0</versions-maven-plugin.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
     </properties>
 
     <dependencies>
-        <!--retrofit-->
+        <!-- Retrofit (com.squareup.retrofit2) -->
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
@@ -60,11 +72,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-gson</artifactId>
             <version>${retrofit.version}</version>
@@ -75,12 +82,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-jackson</artifactId>
@@ -98,30 +99,35 @@
             <version>${retrofit.version}</version>
         </dependency>
 
+        <!-- OkHttp (com.squareup.okhttp3) -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
             <version>${okhttp3.version}</version>
         </dependency>
+
+        <!-- Customizable OkHttp Logging (com.github.bartek-wesolowski) -->
         <dependency>
             <groupId>com.github.bartek-wesolowski</groupId>
             <artifactId>customizable-okhttp-logging-interceptor</artifactId>
-            <version>1.0.2</version>
+            <version>${customizable-okhttp-logging-interceptor.version}</version>
         </dependency>
-        <!--retrofit-->
 
+        <!-- Gson (com.google.code.gson) -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
+
+        <!-- Jackson (com.fasterxml.jackson.core) -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
-            <scope>compile</scope>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
         </dependency>
+
+        <!-- Logback (ch.qos.logback) -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -132,6 +138,24 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
+        <!-- Commons Lang (commons-lang) -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Lombok (org.projectlombok) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JUnit (junit) - Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -204,11 +228,11 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.16.0</version>
+                <version>${versions-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven-dependency-plugin.version}</version>
             </plugin>
 
         </plugins>
